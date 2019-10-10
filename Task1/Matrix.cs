@@ -8,12 +8,11 @@ using System.Xml.Serialization;
 
 namespace Task1
 {
-    public class Matrix: IXmlSerializable
+    public class Matrix : IXmlSerializable, ICloneable
     {
         private double[,] data;
-        public int Rows { get; set; }
-        public int Columns { get; set; }
-        public Matrix() {}
+        public int Rows { get; private set; }
+        public int Columns { get; private set; }
         public Matrix(double[,] data)
         {
             Rows = data.GetLength(0);
@@ -37,17 +36,31 @@ namespace Task1
         {
             get
             {
-                return data[i, j];
+                try
+                {
+                    return data[i, j];
+                }
+                catch(Exception ex)
+                {
+                    throw new MatrixException("Index out of range: matrix["+i +"," + j  + "]");
+                }
             }
             set
             {
-                data[i, j] = value;
+                try
+                {
+                    data[i, j] = value;
+                }
+                catch (Exception ex)
+                {
+                    throw new MatrixException("Index out of range: matrix[" + i + "," + j + "]");
+                }
             }
         }
         public static Matrix operator + (Matrix left, Matrix right)
         {
             if (left.Rows != right.Rows || left.Columns != right.Columns)
-                throw new Exception("Matrices of different dimensions");
+                throw new MatrixException("Matrices of different dimensions");
 
             Matrix result = new Matrix(left.Rows, right.Columns);
 
@@ -62,7 +75,7 @@ namespace Task1
         public static Matrix operator - (Matrix left, Matrix right)
         {
             if (left.Rows != right.Rows || left.Columns != right.Columns)
-                throw new Exception("Different size of matrix");
+                throw new MatrixException("Different size of matrix");
 
             Matrix result = new Matrix(left.Rows, right.Columns);
 
@@ -77,7 +90,7 @@ namespace Task1
         public static Matrix operator * (Matrix left, Matrix right)
         {
             if(left.Columns != right.Rows)
-                throw new Exception("Matrices are`t consistent");
+                throw new MatrixException("Matrices are`t consistent");
 
             Matrix result = new Matrix(left.Rows, right.Columns);
             for(int i =0; i< left.Rows; i++)
@@ -147,6 +160,59 @@ namespace Task1
                 Console.WriteLine();
             }
             Console.ReadKey();
+        }
+        public object Clone()
+        {
+            Matrix matrix = new Matrix(this.Rows, this.Columns);
+
+            for(int i=0; i< Rows; ++i)
+            {
+                for (int j = 0; j < Columns; ++j)
+                    matrix[i, j] = this.data[i, j];
+            }
+
+            return matrix;
+        }
+        public override bool Equals(object obj)
+        {                   
+            Matrix matrix = obj as Matrix;
+                if (matrix is null | this != matrix)
+                {
+                    return false;
+                }
+            return true;
+        }
+        public static bool operator == (Matrix left, Matrix right)
+        {
+            if (left.Columns != right.Columns || right.Rows != left.Rows)
+                return false;
+
+            for (int i = 0; i < right.Rows; ++i)
+            {
+                for (int j = 0; j < right.Columns; j++)
+                {
+                    if (right[i, j] != left[i, j])
+                        return false;
+                }
+            }
+
+            return true;
+        }
+        public static bool operator != (Matrix left, Matrix right)
+        {
+            if (left.Columns != right.Columns || right.Rows != left.Rows)
+                return true;
+
+            for (int i = 0; i < right.Rows; ++i)
+            {
+                for (int j = 0; j < right.Columns; j++)
+                {
+                    if (right[i, j] != left[i, j])
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }

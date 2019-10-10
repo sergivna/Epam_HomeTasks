@@ -8,8 +8,6 @@ namespace Task1
     {
         private double[] coefficients;
         public int Degree { get; private set;}
-        public Polynom()
-        {}
         public Polynom(params double[] data)
         {
             Degree = data.Length - 1;
@@ -59,7 +57,16 @@ namespace Task1
         }
         public static Polynom operator - (Polynom left, Polynom right)
         {
-            Polynom result = new Polynom(Math.Max(left.Degree, right.Degree));
+            int newLength = Math.Min(left.Degree, right.Degree);
+
+            for(int i = Math.Min(left.Degree, right.Degree); i >= 0; i--)
+            {
+                if (left[i] - right[i] ==0 && newLength>0)
+                    newLength--;
+                else
+                    break;
+            }
+            Polynom result = new Polynom(newLength);
 
             for (int i = 0; i <= result.Degree; ++i)
             {
@@ -78,7 +85,6 @@ namespace Task1
 
                 result[i] = a-b;
             }
-
             return result;
         }
         public static Polynom operator * (Polynom left, Polynom right)
@@ -97,6 +103,7 @@ namespace Task1
         }
         public void Print()
         {
+            if(this.Degree==0 || this.coefficients[0]!=0)
             Console.Write(this.coefficients[0]);
 
             for(int i =1; i<= this .Degree; i++)
