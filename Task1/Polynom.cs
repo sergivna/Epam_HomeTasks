@@ -35,6 +35,16 @@ namespace Task1
         }
         public static Polynom operator + (Polynom left, Polynom right)
         {
+            int newLength = Math.Min(left.Degree, right.Degree);
+
+            for (int i = Math.Min(left.Degree, right.Degree); i >= 0; i--)
+            {
+                if (left[i] + right[i] == 0 && newLength > 0)
+                    newLength--;
+                else
+                    break;
+            }
+
             Polynom result = new Polynom(Math.Max(left.Degree, right.Degree));
 
             for (int i = 0; i <= result.Degree; ++i)

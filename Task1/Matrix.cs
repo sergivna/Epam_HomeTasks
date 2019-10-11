@@ -214,5 +214,13 @@ namespace Task1
 
             return false;
         }
+        private bool IsRightIncies (int i, int j)
+        {
+            if(i< 0 || i>=Rows || j<0 || j>= Columns)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
